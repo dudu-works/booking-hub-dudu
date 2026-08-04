@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>선생님 신청하기 - Day11</title>
+<style>
+  :root {
+    --ink: #183027;
+    --muted: #64736c;
+    --paper: #f7f5ed;
+    --panel: #fffdf6;
+    --line: #d7dbcf;
+    --green: #257357;
+    --green-soft: #dff0e7;
+    --orange: #dd7b35;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Apple SD Gothic Neo", Pretendard, sans-serif; color: var(--ink); background: var(--paper); max-width: 480px; margin: 40px auto; padding: 0 16px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.lead { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 8px 25px rgba(24,48,39,.06); }
+  label { display: block; margin: 14px 0 4px; font-weight: 700; font-size: 14px; }
+  label .opt { font-weight: 400; color: var(--muted); font-size: 12px; }
+  input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #bfc9bf; border-radius: 8px; font-size: 15px; background: #fff; color: var(--ink); font-family: inherit; }
+  textarea { resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 3px solid var(--green-soft); border-color: var(--green); }
+  button { margin-top: 18px; width: 100%; padding: 12px 22px; background: var(--orange); color: #fff; border: 0; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  button:hover { filter: brightness(.96); }
+  button:disabled { opacity: .55; cursor: wait; }
+  #done { display: none; color: var(--green); font-weight: 700; margin-top: 14px; }
+</style>
+</head>
+<body>
+<h1>수영 강사 모집</h1>
+<p class="lead">오전 성인 수영 강습 수업을 진행할 강사님을 찾습니다. 경력과 시간 가능 여부를 남겨주세요.</p>
+<div class="card">
+<form id="f">
+  <label for="name">이름</label>
+  <input id="name" name="name" type="text" required maxlength="40">
+  <label for="contact">연락처 <span class="opt">(이메일 또는 전화번호)</span></label>
+  <input id="contact" name="contact" type="text" required maxlength="60">
+  <label for="level">경험 레벨</label>
+  <select id="level" name="level">
+    <option value="beginner">초급 (자격증 미보유)</option>
+    <option value="intermediate">중급 (정규 강사 경험)</option>
+    <option value="advanced">고급 (선임 강사)</option>
+    <option value="certified">자격증 보유 (경력)</option>
+  </select>
+  <label for="availability">수강 가능 시간대</label>
+  <select id="availability" name="availability">
+    <option value="morning">월-금 오전 (모집중)</option>
+    <option value="afternoon">월-금 오후</option>
+    <option value="evening">월-금 저녁</option>
+    <option value="weekend">주말</option>
+  </select>
+  <label for="experience">경력 / 자격사항 <span class="opt">(선택)</span></label>
+  <textarea id="experience" name="experience" rows="3" maxlength="300" placeholder="예: 수영 자격증 보유(발급처), 강의 경력 3년"></textarea>
+  <label for="motivation">지원 동기 <span class="opt">(선택)</span></label>
+  <textarea id="motivation" name="motivation" rows="3" maxlength="300"></textarea>
+  <button type="submit">신청서 제출하기</button>
+</form>
+<p id="done">신청서가 접수됐습니다. 감사합니다.</p>
+</div>
+<script>
+document.getElementById("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const button = e.target.querySelector("button");
+  const body = {
+    name: document.getElementById("name").value,
+    contact: document.getElementById("contact").value,
+    level: document.getElementById("level").value,
+    availability: document.getElementById("availability").value,
+    experience: document.getElementById("experience").value,
+    motivation: document.getElementById("motivation").value
+  };
+  button.disabled = true;
+  try {
+    const res = await fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (res.ok) {
+      document.getElementById("f").style.display = "none";
+      document.getElementById("done").style.display = "block";
+    } else {
+      alert("접수 실패 - 화면을 캡처해 채팅에 올려 주세요 (" + res.status + ")");
+    }
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

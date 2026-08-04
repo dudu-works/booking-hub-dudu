@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>접수 목록 - Day12</title>
+<title>판매 목록 - 커피 자판기</title>
 <style>
   :root {
     --ink: #183027;
@@ -40,8 +40,8 @@
 </style>
 </head>
 <body>
-<h1>접수 목록</h1>
-<p class="lead">지금까지 신청한 선생님들의 정보를 확인하세요. 행을 클릭하면 상세 내용이 나타납니다.</p>
+<h1>판매 현황</h1>
+<p class="lead">커피 자판기 매출 내역을 확인하세요. 행을 클릭하면 상세 정보가 나타납니다.</p>
 
 <div class="content-wrapper">
 <div class="list-container">
@@ -50,10 +50,12 @@
   <table id="listTable" style="display: none;">
     <thead>
       <tr>
-        <th>신청 순번</th>
-        <th>이름</th>
-        <th>지도 과목</th>
-        <th>신청 시각</th>
+        <th>순번</th>
+        <th>구매자</th>
+        <th>상품</th>
+        <th>수량</th>
+        <th>금액</th>
+        <th>시각</th>
       </tr>
     </thead>
     <tbody id="listBody"></tbody>
@@ -61,29 +63,31 @@
 </div>
 
 <div id="detailPanel" class="detail-panel">
-  <div class="detail-title" id="detailName"></div>
+  <div class="detail-title" id="detailBuyerName"></div>
   <div class="detail-row">
-    <div class="detail-label">지도 가능 과목</div>
-    <div class="detail-value" id="detailSubject"></div>
+    <div class="detail-label">상품</div>
+    <div class="detail-value" id="detailProduct"></div>
   </div>
   <div class="detail-row">
-    <div class="detail-label">지원 동기</div>
-    <div class="detail-value" id="detailMotivation"></div>
+    <div class="detail-label">수량</div>
+    <div class="detail-value" id="detailQuantity"></div>
   </div>
   <div class="detail-row">
-    <div class="detail-label">신청 시각</div>
+    <div class="detail-label">단가</div>
+    <div class="detail-value" id="detailPrice"></div>
+  </div>
+  <div class="detail-row">
+    <div class="detail-label">합계</div>
+    <div class="detail-value" id="detailTotal" style="font-weight: 700; color: var(--green); font-size: 16px;"></div>
+  </div>
+  <div class="detail-row">
+    <div class="detail-label">구매 시각</div>
     <div class="detail-value" id="detailCreatedAt"></div>
   </div>
 </div>
 </div>
 
 <script>
-const subjectLabels = {
-  'basic': '컴퓨터 기초',
-  'coding': '코딩 실습',
-  'digital-literacy': '디지털 리터러시'
-};
-
 async function loadList() {
   try {
     const res = await fetch('/api/list');
@@ -96,13 +100,15 @@ async function loadList() {
     const tbody = document.getElementById('listBody');
     json.data.forEach(row => {
       const tr = document.createElement('tr');
-      const date = new Date(row.created_at);
+      const date = new Date(row.purchased_at);
       const dateStr = date.toLocaleString('ko-KR');
 
       tr.innerHTML = `
         <td>#${row.id}</td>
-        <td>${row.name}</td>
-        <td>${subjectLabels[row.subject] || row.subject}</td>
+        <td>${row.buyer_name}</td>
+        <td>${row.product}</td>
+        <td>${row.quantity}개</td>
+        <td>${row.total_price.toLocaleString()}원</td>
         <td>${dateStr}</td>
       `;
 
@@ -122,13 +128,14 @@ async function loadList() {
 }
 
 function showDetail(row) {
-  const date = new Date(row.created_at);
+  const date = new Date(row.purchased_at);
   const dateStr = date.toLocaleString('ko-KR');
-  const motivation = row.motivation || '(기재하지 않음)';
 
-  document.getElementById('detailName').textContent = row.name;
-  document.getElementById('detailSubject').textContent = subjectLabels[row.subject] || row.subject;
-  document.getElementById('detailMotivation').textContent = motivation;
+  document.getElementById('detailBuyerName').textContent = row.buyer_name;
+  document.getElementById('detailProduct').textContent = row.product;
+  document.getElementById('detailQuantity').textContent = row.quantity + '개';
+  document.getElementById('detailPrice').textContent = row.price_per_unit.toLocaleString() + '원';
+  document.getElementById('detailTotal').textContent = row.total_price.toLocaleString() + '원';
   document.getElementById('detailCreatedAt').textContent = dateStr;
 
   document.getElementById('detailPanel').classList.add('active');

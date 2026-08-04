@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day7 - 채용공고 필터 (A 완성본)</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    margin: 0;
+    padding: 24px;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    line-height: 1.6;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h2 { font-size: 16px; margin: 0 0 8px 0; color: #444; }
+  section {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .rule-text { margin: 4px 0; font-size: 14px; }
+  .count-line {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: #eef6ff;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .declare-line {
+    font-size: 13px;
+    color: #555;
+    margin: 0;
+  }
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+  }
+  .filter-row label {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: #333;
+    gap: 4px;
+  }
+  select {
+    padding: 6px 8px;
+    font-size: 14px;
+    min-width: 160px;
+  }
+  #reset-btn {
+    padding: 7px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #999;
+    border-radius: 6px;
+    background: #fff;
+  }
+  #reset-btn:hover { background: #f0f0f0; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+  }
+  th, td {
+    border: 1px solid #e0e0e0;
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f0f0f0;
+    position: sticky;
+    top: 0;
+  }
+  .col-source { font-weight: bold; color: #0a5fb4; }
+  .empty-row { text-align: center; color: #888; padding: 20px; }
+  #table-section { max-height: 520px; overflow-y: auto; }
+</style>
+</head>
+<body>
+
+<h1>채용공고 필터 - A 완성본 (기본 코스)</h1>
+<p style="font-size:13px;color:#666;margin-top:0;">select 값을 바꿔보며 표가 어떻게 달라지는지 관찰하세요. 코드를 고칠 필요는 없습니다.</p>
+
+<section id="cleanup-summary">
+  <h2>1. 어제(Day6) 정리 결과</h2>
+  <p class="rule-text">정리 규칙 1) 중복 제거 - 회사명과 제목이 같으면 같은 공고로 보고, 먼저 나온 것만 남깁니다. (공백 차이, "(주)" / "㈜" 표기 차이는 같은 회사로 봅니다)</p>
+  <p class="rule-text">정리 규칙 2) 빈값 처리 - 회사명 또는 지역이 비어 있으면 지우지 않고 "미기재"로 채웁니다.</p>
+  <p id="cleanup-count" class="count-line">정리 전 -행 -&gt; 정리 후 -행</p>
+</section>
+
+<section id="filter-ui">
+  <h2>2. 오늘(Day7) 필터 - 지역 / 경력 조건 / 채널</h2>
+  <div class="filter-row">
+    <label>지역
+      <select id="region-select"><option value="">전체</option></select>
+    </label>
+    <label>경력 조건(category)
+      <select id="category-select"><option value="">전체</option></select>
+    </label>
+    <label>채널(source)
+      <select id="source-select"><option value="">전체</option></select>
+    </label>
+    <button id="reset-btn" type="button">초기화</button>
+  </div>
+  <p id="filter-count" class="count-line">필터 전 -행 -&gt; 지금 -행</p>
+</section>
+
+<section id="data-declaration">
+  <p class="declare-line">원본 파일(data/jobs_dirty_A.csv)은 이 화면에서 절대 수정되지 않습니다. 화면에 보이는 표는 메모리 안에서 만든 복사본입니다. 원본이 깨졌다면 data/jobs_dirty_A_backup.csv로 되돌릴 수 있습니다.</p>
+</section>
+
+<section id="table-section">
+  <table id="job-table">
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>채널(source)</th>
+        <th>제목</th>
+        <th>회사명</th>
+        <th>지역</th>
+        <th>경력 조건(category)</th>
+        <th>날짜</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

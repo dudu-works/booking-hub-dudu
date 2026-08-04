@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>오후 반복숙달 시작본</title>
+<style>*{box-sizing:border-box}body{font-family:-apple-system,"Malgun Gothic",sans-serif;margin:0;padding:24px;background:#f5f5f7;color:#202124}section{background:#fff;border:1px solid #ddd;border-radius:10px;padding:18px;margin:14px 0}.notice{background:#fff8e1;border-color:#f0c36d}.count{font-weight:700;color:#0b57d0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ddd;padding:7px;text-align:left}th{background:#eef2f7}#table-wrap{overflow:auto;max-height:520px}</style></head>
+<body><h1 id="title">타깃 공개 전 데이터</h1><section class="notice"><strong>아직 유저 조건은 공개되지 않았습니다.</strong><p>원본을 보존하고, agent와 정제 기준을 먼저 기록한 뒤 일반적인 필터 UI를 만드세요.</p><p>정제 전후 행 수와 바꾼 값은 <code>decision_notes.md</code>에 남깁니다.</p></section>
+<section id="filter-ui">
+  <h2>필터 작업 영역</h2>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 10px;">
+    <select id="filter-area"><option value="">모든 지역</option></select>
+    <label><input type="checkbox" id="filter-kaist"> 카이스트 인접</label>
+    <label><input type="checkbox" id="filter-minor"> 미성년자 동거 가능</label>
+    <label><input type="checkbox" id="filter-six-month"> 6개월 계약 가능</label>
+    <label>최대 월세(만): <input type="number" id="filter-rent" style="width: 80px;" placeholder="제한 없음"></label>
+    <label>최대 보증금(만): <input type="number" id="filter-deposit" style="width: 80px;" placeholder="제한 없음"></label>
+    <button id="btn-reset" style="padding: 4px 8px; cursor: pointer; background: #fff; border: 1px solid #ccc; border-radius: 4px;">초기화</button>
+  </div>
+</section>
+<section><p id="count" class="count">불러오는 중</p><div id="table-wrap"><table><thead id="head"></thead><tbody id="body"></tbody></table></div></section><script src="app.js"></script></body></html>

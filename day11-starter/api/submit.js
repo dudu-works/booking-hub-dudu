@@ -1,4 +1,4 @@
-// Vercel 서버리스 함수 - 커피 판매 내역을 Supabase에 저장한다.
+// Vercel 서버리스 함수 - "선생님 신청하기" 지원서를 Supabase에 저장한다.
 // 키는 코드에 쓰지 않는다. Vercel 환경변수(SUPABASE_URL, SUPABASE_ANON_KEY)에서 읽는다.
 import { createClient } from "@supabase/supabase-js";
 
@@ -7,17 +7,16 @@ export default async function handler(req, res) {
 
   if (req.method !== "POST") return res.status(405).json({ error: "POST만 받습니다" });
 
-  const { buyer_name, product, quantity, price_per_unit } = req.body || {};
-  if (!buyer_name || !product || !quantity || !price_per_unit) {
+  const { name, contact, level, availability, experience, motivation } = req.body || {};
+  if (!name || !contact || !level || !availability) {
     console.log(JSON.stringify({ event: "submit", ok: false, duration_ms: Date.now() - t0 }));
-    return res.status(400).json({ error: "buyer_name, product, quantity, price_per_unit이 필요합니다" });
+    return res.status(400).json({ error: "name, contact, level, availability가 필요합니다" });
   }
 
-  const total_price = quantity * price_per_unit;
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
   const { error } = await supabase
-    .from("sales")
-    .insert({ buyer_name, product, quantity, price_per_unit, total_price });
+    .from("applications")
+    .insert({ name, contact, level, availability, experience: experience || null, motivation: motivation || null });
 
   if (error) {
     console.log(JSON.stringify({ event: "submit", ok: false, duration_ms: Date.now() - t0 }));
@@ -25,6 +24,6 @@ export default async function handler(req, res) {
   }
 
   // 처리 시간을 구조화 로그로 남긴다 - Vercel Logs 탭에서 duration_ms로 응답 시간을 읽을 수 있다.
-  console.log(JSON.stringify({ event: "submit", ok: true, amount: total_price, duration_ms: Date.now() - t0 }));
+  console.log(JSON.stringify({ event: "submit", ok: true, duration_ms: Date.now() - t0 }));
   return res.status(200).json({ ok: true });
 }

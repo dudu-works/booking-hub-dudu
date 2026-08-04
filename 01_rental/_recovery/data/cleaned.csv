@@ -1,0 +1,13 @@
+id,title,area,near_kaist,minor_co_resident_allowed,six_month_contract,monthly_rent_만원,deposit_만원
+1,궁동 투룸 A,궁동,true,true,true,75,1000
+2,어은동 원룸 B,어은동,true,false,true,60,500
+3,봉명동 투룸 C,봉명동,false,true,true,70,1000
+4,궁동 원룸 D,궁동,true,true,false,55,500
+5,어은동 투룸 E,어은동,true,true,true,82,1500
+6,죽동 투룸 F,죽동,false,true,true,68,1000
+7,궁동 쓰리룸 G,궁동,true,false,true,95,2000
+8,노은동 투룸 H,노은동,false,false,false,63,1000
+9,어은동 원룸 I,어은동,true,true,false,58,500
+10,궁동 투룸 J,궁동,true,true,true,79,1000
+11,죽동 원룸 K,죽동,false,false,true,52,500
+12,어은동 투룸 L,어은동,true,false,false,73,1000
