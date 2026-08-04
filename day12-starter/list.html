@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>접수 목록 - Day12</title>
+<style>
+  :root {
+    --ink: #183027;
+    --muted: #64736c;
+    --paper: #f7f5ed;
+    --panel: #fffdf6;
+    --line: #d7dbcf;
+    --green: #257357;
+    --green-soft: #dff0e7;
+    --orange: #dd7b35;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Apple SD Gothic Neo", Pretendard, sans-serif; color: var(--ink); background: var(--paper); max-width: 900px; margin: 40px auto; padding: 0 16px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.lead { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+
+  .list-container { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 8px 25px rgba(24,48,39,.06); }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 12px; border-bottom: 2px solid var(--line); font-weight: 700; font-size: 13px; color: var(--muted); background: rgba(37, 115, 87, .04); }
+  td { padding: 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  tr { cursor: pointer; transition: background 0.1s; }
+  tr:hover { background: rgba(37, 115, 87, .08); }
+
+  .detail-panel { margin-top: 24px; padding: 18px; background: rgba(37, 115, 87, .06); border-left: 4px solid var(--green); border-radius: 8px; display: none; }
+  .detail-panel.active { display: block; }
+  .detail-title { font-weight: 700; font-size: 16px; margin: 0 0 12px; }
+  .detail-row { margin: 8px 0; }
+  .detail-label { font-weight: 700; font-size: 13px; color: var(--muted); }
+  .detail-value { margin-top: 2px; font-size: 14px; line-height: 1.6; }
+
+  .loading { text-align: center; color: var(--muted); padding: 40px; }
+  .error { color: #c41e3a; padding: 16px; background: #fff0f0; border-radius: 8px; margin: 18px 0; }
+</style>
+</head>
+<body>
+<h1>접수 목록</h1>
+<p class="lead">지금까지 신청한 선생님들의 정보를 확인하세요. 행을 클릭하면 상세 내용이 나타납니다.</p>
+
+<div class="list-container">
+  <div id="loading" class="loading">로딩 중...</div>
+  <div id="error"></div>
+  <table id="listTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>신청 순번</th>
+        <th>이름</th>
+        <th>지도 과목</th>
+        <th>신청 시각</th>
+      </tr>
+    </thead>
+    <tbody id="listBody"></tbody>
+  </table>
+</div>
+
+<div id="detailPanel" class="detail-panel">
+  <div class="detail-title" id="detailName"></div>
+  <div class="detail-row">
+    <div class="detail-label">지도 가능 과목</div>
+    <div class="detail-value" id="detailSubject"></div>
+  </div>
+  <div class="detail-row">
+    <div class="detail-label">지원 동기</div>
+    <div class="detail-value" id="detailMotivation"></div>
+  </div>
+  <div class="detail-row">
+    <div class="detail-label">신청 시각</div>
+    <div class="detail-value" id="detailCreatedAt"></div>
+  </div>
+</div>
+
+<script>
+const subjectLabels = {
+  'basic': '컴퓨터 기초',
+  'coding': '코딩 실습',
+  'digital-literacy': '디지털 리터러시'
+};
+
+async function loadList() {
+  try {
+    const res = await fetch('/api/list');
+    if (!res.ok) throw new Error(`${res.status} 에러 발생`);
+    const json = await res.json();
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('listTable').style.display = 'table';
+
+    const tbody = document.getElementById('listBody');
+    json.data.forEach(row => {
+      const tr = document.createElement('tr');
+      const date = new Date(row.created_at);
+      const dateStr = date.toLocaleString('ko-KR');
+
+      tr.innerHTML = `
+        <td>#${row.id}</td>
+        <td>${row.name}</td>
+        <td>${subjectLabels[row.subject] || row.subject}</td>
+        <td>${dateStr}</td>
+      `;
+
+      tr.addEventListener('click', () => showDetail(row));
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').innerHTML = `
+      <div class="error">
+        <strong>로드 실패</strong><br>
+        ${err.message}<br>
+        <small>화면을 새로고침 하거나 채팅에 알려주세요.</small>
+      </div>
+    `;
+  }
+}
+
+function showDetail(row) {
+  const date = new Date(row.created_at);
+  const dateStr = date.toLocaleString('ko-KR');
+  const motivation = row.motivation || '(기재하지 않음)';
+
+  document.getElementById('detailName').textContent = row.name;
+  document.getElementById('detailSubject').textContent = subjectLabels[row.subject] || row.subject;
+  document.getElementById('detailMotivation').textContent = motivation;
+  document.getElementById('detailCreatedAt').textContent = dateStr;
+
+  document.getElementById('detailPanel').classList.add('active');
+  document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+loadList();
+</script>
+</body>
+</html>
