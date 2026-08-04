@@ -20,14 +20,15 @@
   h1 { font-size: 22px; margin: 0 0 4px; }
   p.lead { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
 
-  .list-container { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 8px 25px rgba(24,48,39,.06); }
-  table { width: 100%; border-collapse: collapse; }
+  .content-wrapper { display: flex; gap: 24px; align-items: flex-start; }
+  .list-container { flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 8px 25px rgba(24,48,39,.06); overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 500px; }
   th { text-align: left; padding: 12px; border-bottom: 2px solid var(--line); font-weight: 700; font-size: 13px; color: var(--muted); background: rgba(37, 115, 87, .04); }
   td { padding: 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
   tr { cursor: pointer; transition: background 0.1s; }
   tr:hover { background: rgba(37, 115, 87, .08); }
 
-  .detail-panel { margin-top: 24px; padding: 18px; background: rgba(37, 115, 87, .06); border-left: 4px solid var(--green); border-radius: 8px; display: none; }
+  .detail-panel { flex-shrink: 0; width: 280px; padding: 18px; background: rgba(37, 115, 87, .06); border-left: 4px solid var(--green); border-radius: 8px; display: none; position: sticky; top: 40px; }
   .detail-panel.active { display: block; }
   .detail-title { font-weight: 700; font-size: 16px; margin: 0 0 12px; }
   .detail-row { margin: 8px 0; }
@@ -41,6 +42,23 @@
 <body>
 <h1>접수 목록</h1>
 <p class="lead">지금까지 신청한 선생님들의 정보를 확인하세요. 행을 클릭하면 상세 내용이 나타납니다.</p>
+
+<div class="content-wrapper">
+<div class="list-container">
+  <div id="loading" class="loading">로딩 중...</div>
+  <div id="error"></div>
+  <table id="listTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>신청 순번</th>
+        <th>이름</th>
+        <th>지도 과목</th>
+        <th>신청 시각</th>
+      </tr>
+    </thead>
+    <tbody id="listBody"></tbody>
+  </table>
+</div>
 
 <div id="detailPanel" class="detail-panel">
   <div class="detail-title" id="detailName"></div>
@@ -57,21 +75,6 @@
     <div class="detail-value" id="detailCreatedAt"></div>
   </div>
 </div>
-
-<div class="list-container">
-  <div id="loading" class="loading">로딩 중...</div>
-  <div id="error"></div>
-  <table id="listTable" style="display: none;">
-    <thead>
-      <tr>
-        <th>신청 순번</th>
-        <th>이름</th>
-        <th>지도 과목</th>
-        <th>신청 시각</th>
-      </tr>
-    </thead>
-    <tbody id="listBody"></tbody>
-  </table>
 </div>
 
 <script>
@@ -129,7 +132,6 @@ function showDetail(row) {
   document.getElementById('detailCreatedAt').textContent = dateStr;
 
   document.getElementById('detailPanel').classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 loadList();
