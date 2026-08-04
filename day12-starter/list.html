@@ -42,22 +42,6 @@
 <h1>접수 목록</h1>
 <p class="lead">지금까지 신청한 선생님들의 정보를 확인하세요. 행을 클릭하면 상세 내용이 나타납니다.</p>
 
-<div class="list-container">
-  <div id="loading" class="loading">로딩 중...</div>
-  <div id="error"></div>
-  <table id="listTable" style="display: none;">
-    <thead>
-      <tr>
-        <th>신청 순번</th>
-        <th>이름</th>
-        <th>지도 과목</th>
-        <th>신청 시각</th>
-      </tr>
-    </thead>
-    <tbody id="listBody"></tbody>
-  </table>
-</div>
-
 <div id="detailPanel" class="detail-panel">
   <div class="detail-title" id="detailName"></div>
   <div class="detail-row">
@@ -72,6 +56,22 @@
     <div class="detail-label">신청 시각</div>
     <div class="detail-value" id="detailCreatedAt"></div>
   </div>
+</div>
+
+<div class="list-container">
+  <div id="loading" class="loading">로딩 중...</div>
+  <div id="error"></div>
+  <table id="listTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>신청 순번</th>
+        <th>이름</th>
+        <th>지도 과목</th>
+        <th>신청 시각</th>
+      </tr>
+    </thead>
+    <tbody id="listBody"></tbody>
+  </table>
 </div>
 
 <script>
@@ -129,7 +129,7 @@ function showDetail(row) {
   document.getElementById('detailCreatedAt').textContent = dateStr;
 
   document.getElementById('detailPanel').classList.add('active');
-  document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 loadList();
