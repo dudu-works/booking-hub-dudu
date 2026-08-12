@@ -1,0 +1,10 @@
+{
+  "framework": null,
+  "buildCommand": null,
+  "outputDirectory": "public",
+  "functions": {
+    "api/analyze.py": {
+      "maxDuration": 30
+    }
+  }
+}

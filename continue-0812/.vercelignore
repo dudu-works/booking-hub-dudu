@@ -1,0 +1,11 @@
+.env
+.env.*
+.continue
+.DS_Store
+__pycache__
+/config.yaml
+/app.py
+/index.html
+/STUDENT_DISTRIBUTION
+/STUDENT_DISTRIBUTION.zip
+/*.md
