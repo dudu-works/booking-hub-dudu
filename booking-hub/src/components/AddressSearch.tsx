@@ -16,7 +16,8 @@ export function AddressSearch({ onAddressSelect, value }: AddressSearchProps) {
     if (!isOpen) return;
 
     // Leaflet 로드
-    if (!window.L) {
+    const w = window as any;
+    if (!w.L) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
@@ -35,14 +36,15 @@ export function AddressSearch({ onAddressSelect, value }: AddressSearchProps) {
       if (!mapRef.current) return;
 
       if (!mapInstanceRef.current) {
-        mapInstanceRef.current = window.L.map(mapRef.current).setView([37.5665, 126.978], 12);
+        mapInstanceRef.current = w.L.map(mapRef.current).setView([37.5665, 126.978], 12);
 
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        w.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19,
         }).addTo(mapInstanceRef.current);
 
         mapInstanceRef.current.on('click', async (e: any) => {
+          const L = w.L;
           const { lat, lng } = e.latlng;
 
           try {
@@ -58,7 +60,7 @@ export function AddressSearch({ onAddressSelect, value }: AddressSearchProps) {
             if (markerRef.current) {
               mapInstanceRef.current.removeLayer(markerRef.current);
             }
-            markerRef.current = window.L.marker([lat, lng])
+            markerRef.current = L.marker([lat, lng])
               .addTo(mapInstanceRef.current)
               .bindPopup(`<div style="text-align: center;"><strong>${address}</strong></div>`)
               .openPopup();

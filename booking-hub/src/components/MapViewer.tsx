@@ -20,7 +20,8 @@ export function MapViewer({ lat, lng, address }: MapViewerProps) {
       document.head.appendChild(link);
     }
 
-    if (!window.L) {
+    const w = window as any;
+    if (!w.L) {
       const script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
       script.async = true;
@@ -35,14 +36,15 @@ export function MapViewer({ lat, lng, address }: MapViewerProps) {
 
       const defaultLat = lat || 37.5665;
       const defaultLng = lng || 126.978;
+      const L = w.L;
 
       if (!mapInstanceRef.current) {
-        mapInstanceRef.current = window.L.map(mapRef.current).setView(
+        mapInstanceRef.current = L.map(mapRef.current).setView(
           [defaultLat, defaultLng],
           13
         );
 
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19,
         }).addTo(mapInstanceRef.current);
@@ -57,7 +59,7 @@ export function MapViewer({ lat, lng, address }: MapViewerProps) {
 
       // 새 마커 추가
       if (lat && lng) {
-        markerRef.current = window.L.marker([lat, lng])
+        markerRef.current = L.marker([lat, lng])
           .addTo(mapInstanceRef.current)
           .bindPopup(address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`);
       }
