@@ -122,7 +122,7 @@ export default function App() {
 
           {activeTab === '예약추가' && (
             <div>
-              <BookingForm onSuccess={handleFormSuccess} />
+              <BookingForm onSuccess={handleFormSuccess} isAdmin={isAdminUser} />
             </div>
           )}
 

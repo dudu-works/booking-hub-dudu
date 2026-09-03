@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { addEventToCalendar, getCalendarAccessToken } from '../lib/googleCalendarService';
 
 interface BookingFormProps {
   onSuccess?: () => void;
+  isAdmin?: boolean;
 }
 
-export function BookingForm({ onSuccess }: BookingFormProps) {
+export function BookingForm({ onSuccess, isAdmin = false }: BookingFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -35,22 +37,44 @@ export function BookingForm({ onSuccess }: BookingFormProps) {
     }
 
     setLoading(true);
-    const { error: insertError } = await supabase
-      .from('bookings')
-      .insert([
-        {
-          customer: formData.customer,
-          service: formData.service,
-          date: formData.date,
-          time: formData.time,
-          address: formData.address,
-          via: 'form',
-        },
-      ]);
+    try {
+      const { error: insertError } = await supabase
+        .from('bookings')
+        .insert([
+          {
+            customer: formData.customer,
+            service: formData.service,
+            date: formData.date,
+            time: formData.time,
+            address: formData.address,
+            via: 'form',
+          },
+        ]);
 
-    if (insertError) {
-      setError(`예약 추가 실패: ${insertError.message}`);
-    } else {
+      if (insertError) {
+        setError(`예약 추가 실패: ${insertError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      // Admin 유저만 Google Calendar에 등록
+      if (isAdmin) {
+        try {
+          const accessToken = await getCalendarAccessToken();
+          await addEventToCalendar(accessToken, formData);
+        } catch (calendarError) {
+          console.warn('Google Calendar 등록 실패:', calendarError);
+          // Calendar 등록 실패해도 예약은 진행
+          setError(
+            `예약이 추가되었으나 Google Calendar 등록 실패: ${
+              calendarError instanceof Error ? calendarError.message : '알 수 없는 오류'
+            }`
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
       setFormData({
         customer: '',
         service: '',
@@ -59,6 +83,8 @@ export function BookingForm({ onSuccess }: BookingFormProps) {
         address: '',
       });
       onSuccess?.();
+    } catch (err) {
+      setError(`예약 추가 중 오류 발생: ${err instanceof Error ? err.message : '알 수 없는 오류'}`);
     }
     setLoading(false);
   };
